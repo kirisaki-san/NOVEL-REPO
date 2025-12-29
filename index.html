@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TEMPEST // DATABASE: OMEGA</title>
+    <!-- Google Fonts: Orbitron (Headers) and Share Tech Mono (Data/Text) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- CORE SYSTEM VARIABLES --- */
+        :root {
+            --bg-color: #050505;
+            --neon-blue: #00f3ff;
+            --neon-green: #39ff14;
+            --neon-pink: #ff0055;
+            --glass-panel: rgba(255, 255, 255, 0.05);
+            --scanline-color: rgba(0, 0, 0, 0.5);
+        }
+
+        /* --- GLOBAL RESET & TYPOGRAPHY --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: #eee;
+            font-family: 'Share Tech Mono', monospace;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* --- CRT SCANLINE OVERLAY (The "Old Monitor" Look) --- */
+        .crt-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0),
+                rgba(255,255,255,0) 50%,
+                rgba(0,0,0,0.2) 50%,
+                rgba(0,0,0,0.2)
+            );
+            background-size: 100% 4px;
+            z-index: 9999;
+            pointer-events: none; /* Allows clicking through the overlay */
+            animation: flicker 0.15s infinite;
+        }
+
+        /* --- LAYOUT STRUCTURE --- */
+        .main-interface {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* --- HERO SECTION (Volume 1) --- */
+        .hero {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+            margin-bottom: 100px;
+            border: 1px solid var(--neon-blue);
+            padding: 40px;
+            background: radial-gradient(circle at center, rgba(0, 243, 255, 0.1), transparent 70%);
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.1);
+        }
+
+        .cover-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 350px;
+            margin: 0 auto;
+        }
+
+        .cover-img {
+            width: 100%;
+            display: block;
+            border: 2px solid var(--neon-blue);
+            box-shadow: 10px 10px 0px var(--neon-pink);
+            filter: grayscale(20%) contrast(120%);
+            transition: all 0.3s ease;
+        }
+
+        .cover-img:hover {
+            transform: translate(-5px, -5px);
+            box-shadow: 15px 15px 0px var(--neon-green);
+            filter: grayscale(0%);
+        }
+
+        .hero-data h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem;
+            line-height: 1;
+            margin-bottom: 10px;
+            color: #fff;
+            text-transform: uppercase;
+            position: relative;
+        }
+
+        /* Glitch Animation for Title */
+        .glitch-text {
+            position: relative;
+        }
+        .glitch-text::before, .glitch-text::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-color);
+        }
+        .glitch-text::before {
+            left: 2px;
+            text-shadow: -1px 0 var(--neon-pink);
+            clip: rect(24px, 550px, 90px, 0);
+            animation: glitch-anim-2 3s infinite linear alternate-reverse;
+        }
+        .glitch-text::after {
+            left: -2px;
+            text-shadow: -1px 0 var(--neon-blue);
+            clip: rect(85px, 550px, 140px, 0);
+            animation: glitch-anim 2.5s infinite linear alternate-reverse;
+        }
+
+        .subtitle {
+            color: var(--neon-green);
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+        }
+
+        .btn-initialize {
+            display: inline-block;
+            padding: 20px 40px;
+            background: transparent;
+            border: 2px solid var(--neon-blue);
+            color: var(--neon-blue);
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            transition: 0.3s;
+            overflow: hidden;
+        }
+
+        .btn-initialize:hover {
+            background: var(--neon-blue);
+            color: #000;
+            box-shadow: 0 0 30px var(--neon-blue);
+        }
+
+        /* --- DATABASE GRID (Volumes 2-22) --- */
+        .database-header {
+            font-family: 'Orbitron', sans-serif;
+            border-bottom: 1px solid var(--neon-pink);
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            color: var(--neon-pink);
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .data-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid #333;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 250px;
+            position: relative;
+            transition: 0.3s;
+            cursor: not-allowed;
+            overflow: hidden;
+        }
+
+        .data-card.locked {
+            color: #555;
+        }
+
+        .data-card.locked::after {
+            content: "ENCRYPTED";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 1.5rem;
+            color: var(--neon-pink);
+            border: 2px solid var(--neon-pink);
+            padding: 5px 10px;
+            opacity: 0.3;
+        }
+
+        .data-card:hover {
+            border-color: var(--neon-pink);
+            box-shadow: inset 0 0 20px rgba(255, 0, 85, 0.2);
+            transform: scale(1.02);
+        }
+
+        .vol-num {
+            font-size: 3rem;
+            font-weight: bold;
+            opacity: 0.2;
+        }
+
+        /* --- WATERMARK --- */
+        .watermark {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            text-align: right;
+            font-size: 0.7rem;
+            color: var(--neon-green);
+            opacity: 0.6;
+            z-index: 1000;
+            border-right: 2px solid var(--neon-green);
+            padding-right: 10px;
+            line-height: 1.4;
+        }
+
+        /* --- MOBILE RESPONSIVENESS --- */
+        @media (max-width: 768px) {
+            .hero { grid-template-columns: 1fr; text-align: center; }
+            .hero-data h1 { font-size: 2.5rem; }
+            .cover-img { max-width: 200px; margin: 0 auto; }
+        }
+
+        /* --- ANIMATION KEYFRAMES --- */
+        @keyframes glitch-anim {
+            0% { clip: rect(10px, 9999px, 80px, 0); }
+            20% { clip: rect(60px, 9999px, 10px, 0); }
+            40% { clip: rect(90px, 9999px, 30px, 0); }
+            60% { clip: rect(15px, 9999px, 50px, 0); }
+            80% { clip: rect(85px, 9999px, 15px, 0); }
+            100% { clip: rect(120px, 9999px, 5px, 0); }
+        }
+        @keyframes glitch-anim-2 {
+            0% { clip: rect(60px, 9999px, 10px, 0); }
+            20% { clip: rect(120px, 9999px, 5px, 0); }
+            40% { clip: rect(10px, 9999px, 80px, 0); }
+            60% { clip: rect(90px, 9999px, 30px, 0); }
+            80% { clip: rect(15px, 9999px, 50px, 0); }
+            100% { clip: rect(85px, 9999px, 15px, 0); }
+        }
+        @keyframes flicker {
+            0% { opacity: 0.95; }
+            5% { opacity: 0.8; }
+            10% { opacity: 0.9; }
+            15% { opacity: 0.6; }
+            100% { opacity: 0.95; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- CRT Overlay Element -->
+    <div class="crt-overlay"></div>
+
+    <div class="main-interface">
+        
+        <!-- HERO SECTION -->
+        <section class="hero">
+            <div class="cover-wrapper">
+                <!-- LINKED IMAGE FROM FANDOM WIKI -->
+                <img src="https://static.wikia.nocookie.net/tensei-shitara-slime-datta-ken/images/c/ce/Manga_Volume_1_EN.jpg/revision/latest?cb=20181003060111" alt="Volume 1 Cover" class="cover-img">
+            </div>
+            <div class="hero-data">
+                <p class="subtitle">SYSTEM ALERT: NEW ISEKAI DETECTED</p>
+                <!-- The data-text attribute is required for the glitch effect -->
+                <h1 class="glitch-text" data-text="TEMPEST DATABASE">TEMPEST DATABASE</h1>
+                <p style="margin-bottom: 30px; color: #888;">> ENTITY: RIMURU TEMPEST<br>> STATUS: ACTIVE<br>> VOLUME: 01 UNLOCKED</p>
+                
+                <!-- THE PDF LINK -->
+                <a href="book.pdf" target="_blank" class="btn-initialize">
+                    [ INITIALIZE READING ]
+                </a>
+            </div>
+        </section>
+
+        <!-- LOCKED VOLUMES GRID -->
+        <h2 class="database-header">/// ENCRYPTED ARCHIVES (VOL 02-22)</h2>
+        <div class="grid-container" id="grid-target">
+            <!-- Javascript will fill this grid automatically -->
+        </div>
+
+    </div>
+
+    <!-- WATERMARK -->
+    <div class="watermark">
+        EDUCATIONAL PURPOSES ONLY<br>
+        ARCHITECT: RNS<br>
+        SYS_ID: 9942-X
+    </div>
+
+    <script>
+        // SIMPLE SCRIPT TO GENERATE THE LOCKED CARDS (VOL 2 - 22)
+        const grid = document.getElementById('grid-target');
+        
+        for (let i = 2; i <= 22; i++) {
+            const card = document.createElement('div');
+            card.classList.add('data-card', 'locked');
+            
+            // Adding a little randomization to the "glitch" decoration
+            const decoration = Math.random() > 0.5 ? '///' : '>>>';
+            
+            card.innerHTML = `
+                <div class="vol-num">${i < 10 ? '0' + i : i}</div>
+                <div style="font-size: 0.8rem; margin-top:10px;">${decoration} DATA CORRUPT</div>
+            `;
+            grid.appendChild(card);
+        }
+    </script>
+</body>
+</html>

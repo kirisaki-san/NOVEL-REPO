@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TEMPEST // DATABASE: OMEGA</title>
-    <!-- Google Fonts: Orbitron (Headers) and Share Tech Mono (Data/Text) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -16,291 +15,330 @@
             --neon-blue: #00f3ff;
             --neon-green: #39ff14;
             --neon-pink: #ff0055;
-            --glass-panel: rgba(255, 255, 255, 0.05);
-            --scanline-color: rgba(0, 0, 0, 0.5);
+            --text-main: #e0e0e0;
+            --text-dim: #888;
         }
 
-        /* --- GLOBAL RESET & TYPOGRAPHY --- */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        /* --- GLOBAL RESET --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             background-color: var(--bg-color);
-            color: #eee;
+            color: var(--text-main);
             font-family: 'Share Tech Mono', monospace;
             overflow-x: hidden;
             min-height: 100vh;
+            padding-bottom: 50px;
         }
 
-        /* --- CRT SCANLINE OVERLAY (The "Old Monitor" Look) --- */
+        /* --- VISUAL FX: CRT & SCROLLBAR --- */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #111; }
+        ::-webkit-scrollbar-thumb { background: var(--neon-blue); }
+
         .crt-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: linear-gradient(
-                to bottom,
-                rgba(255,255,255,0),
-                rgba(255,255,255,0) 50%,
-                rgba(0,0,0,0.2) 50%,
-                rgba(0,0,0,0.2)
-            );
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(to bottom, rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 50%);
             background-size: 100% 4px;
-            z-index: 9999;
-            pointer-events: none; /* Allows clicking through the overlay */
-            animation: flicker 0.15s infinite;
+            z-index: 9999; pointer-events: none;
         }
 
-        /* --- LAYOUT STRUCTURE --- */
+        /* --- NAVIGATION & LAYOUT --- */
         .main-interface {
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 0 auto;
             padding: 40px 20px;
             position: relative;
             z-index: 1;
         }
 
-        /* --- HERO SECTION (Volume 1) --- */
-        .hero {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 50px;
-            align-items: center;
-            margin-bottom: 100px;
-            border: 1px solid var(--neon-blue);
-            padding: 40px;
-            background: radial-gradient(circle at center, rgba(0, 243, 255, 0.1), transparent 70%);
-            box-shadow: 0 0 30px rgba(0, 243, 255, 0.1);
-        }
+        /* Utility to hide/show sections */
+        .hidden { display: none !important; }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
 
-        .cover-wrapper {
-            position: relative;
-            width: 100%;
-            max-width: 350px;
-            margin: 0 auto;
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- VIEW 1: HOME (HERO) --- */
+        .hero {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 50px;
+            align-items: center; margin-bottom: 60px;
+            border: 1px solid var(--neon-blue); padding: 40px;
+            background: radial-gradient(circle at center, rgba(0, 243, 255, 0.05), transparent 70%);
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.05);
         }
 
         .cover-img {
-            width: 100%;
-            display: block;
+            width: 100%; max-width: 300px; display: block; margin: 0 auto;
             border: 2px solid var(--neon-blue);
             box-shadow: 10px 10px 0px var(--neon-pink);
-            filter: grayscale(20%) contrast(120%);
-            transition: all 0.3s ease;
+            transition: 0.3s;
         }
+        .cover-img:hover { transform: translate(-5px, -5px); filter: brightness(1.2); }
 
-        .cover-img:hover {
-            transform: translate(-5px, -5px);
-            box-shadow: 15px 15px 0px var(--neon-green);
-            filter: grayscale(0%);
-        }
-
-        .hero-data h1 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 3.5rem;
-            line-height: 1;
-            margin-bottom: 10px;
-            color: #fff;
-            text-transform: uppercase;
-            position: relative;
-        }
-
-        /* Glitch Animation for Title */
-        .glitch-text {
-            position: relative;
-        }
+        h1 { font-family: 'Orbitron', sans-serif; font-size: 3rem; color: #fff; line-height: 1; margin-bottom: 10px; }
+        
+        .glitch-text { position: relative; }
         .glitch-text::before, .glitch-text::after {
-            content: attr(data-text);
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--bg-color);
+            content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color);
         }
-        .glitch-text::before {
-            left: 2px;
-            text-shadow: -1px 0 var(--neon-pink);
-            clip: rect(24px, 550px, 90px, 0);
-            animation: glitch-anim-2 3s infinite linear alternate-reverse;
+        .glitch-text::before { left: 2px; text-shadow: -1px 0 var(--neon-pink); clip: rect(24px, 550px, 90px, 0); animation: glitch 3s infinite alternate-reverse; }
+        .glitch-text::after { left: -2px; text-shadow: -1px 0 var(--neon-blue); clip: rect(85px, 550px, 140px, 0); animation: glitch 2s infinite alternate-reverse; }
+
+        .btn-main {
+            display: inline-block; padding: 15px 30px; margin-top: 20px;
+            border: 1px solid var(--neon-blue); color: var(--neon-blue);
+            font-family: 'Orbitron'; font-weight: bold; cursor: pointer;
+            transition: 0.3s; background: transparent; text-transform: uppercase;
         }
-        .glitch-text::after {
-            left: -2px;
-            text-shadow: -1px 0 var(--neon-blue);
-            clip: rect(85px, 550px, 140px, 0);
-            animation: glitch-anim 2.5s infinite linear alternate-reverse;
+        .btn-main:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 20px var(--neon-blue); }
+
+        /* --- VIEW 2: CHAPTER LIST (Streaming Style) --- */
+        .chapter-list-container {
+            border: 1px solid var(--neon-pink);
+            padding: 30px;
+            background: rgba(255, 0, 85, 0.05);
         }
 
-        .subtitle {
-            color: var(--neon-green);
-            font-size: 1.2rem;
-            margin-bottom: 30px;
-            letter-spacing: 2px;
+        .list-header {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 2px solid var(--neon-pink); padding-bottom: 15px; margin-bottom: 20px;
         }
 
-        .btn-initialize {
-            display: inline-block;
-            padding: 20px 40px;
-            background: transparent;
-            border: 2px solid var(--neon-blue);
+        .chapter-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px; border-bottom: 1px solid #333;
+            cursor: pointer; transition: 0.2s;
+        }
+        .chapter-item:hover { background: rgba(0, 243, 255, 0.1); padding-left: 25px; border-left: 4px solid var(--neon-blue); }
+        
+        .chapter-item.locked { opacity: 0.5; cursor: not-allowed; }
+        .chapter-item.locked:hover { background: none; padding-left: 15px; border-left: none; color: var(--neon-pink); }
+
+        /* --- VIEW 3: READER UI --- */
+        .reader-ui {
+            background: #0a0a0a; border: 1px solid #333; padding: 40px;
+            max-width: 800px; margin: 0 auto;
+        }
+
+        .reader-controls {
+            display: flex; justify-content: space-between; margin-bottom: 30px;
+            border-bottom: 1px solid #333; padding-bottom: 10px;
+        }
+
+        .back-btn {
+            color: var(--neon-pink); cursor: pointer; text-decoration: underline;
+        }
+
+        .story-text {
+            font-size: 1.1rem; line-height: 1.8; color: #ccc;
+        }
+
+        .story-text p { margin-bottom: 20px; }
+
+        /* The "Great Sage" / System Voice Style */
+        .system-voice {
+            display: block;
+            border-left: 3px solid var(--neon-blue);
+            padding-left: 15px;
+            margin: 20px 0;
             color: var(--neon-blue);
             font-family: 'Orbitron', sans-serif;
-            font-weight: 700;
-            text-decoration: none;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            position: relative;
-            transition: 0.3s;
-            overflow: hidden;
+            font-size: 0.9rem;
+            background: rgba(0, 243, 255, 0.05);
+            padding: 10px;
         }
 
-        .btn-initialize:hover {
-            background: var(--neon-blue);
-            color: #000;
-            box-shadow: 0 0 30px var(--neon-blue);
-        }
-
-        /* --- DATABASE GRID (Volumes 2-22) --- */
-        .database-header {
-            font-family: 'Orbitron', sans-serif;
-            border-bottom: 1px solid var(--neon-pink);
-            margin-bottom: 30px;
-            padding-bottom: 10px;
-            color: var(--neon-pink);
-        }
-
+        /* --- GRID (Vols 2-22) --- */
         .grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; margin-top: 50px;
         }
-
-        .data-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid #333;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 250px;
-            position: relative;
-            transition: 0.3s;
-            cursor: not-allowed;
-            overflow: hidden;
-        }
-
-        .data-card.locked {
-            color: #555;
-        }
-
-        .data-card.locked::after {
-            content: "ENCRYPTED";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-45deg);
-            font-size: 1.5rem;
-            color: var(--neon-pink);
-            border: 2px solid var(--neon-pink);
-            padding: 5px 10px;
-            opacity: 0.3;
-        }
-
-        .data-card:hover {
-            border-color: var(--neon-pink);
-            box-shadow: inset 0 0 20px rgba(255, 0, 85, 0.2);
-            transform: scale(1.02);
-        }
-
-        .vol-num {
-            font-size: 3rem;
-            font-weight: bold;
-            opacity: 0.2;
+        .mini-card {
+            height: 100px; background: #111; border: 1px solid #333;
+            display: flex; align-items: center; justify-content: center;
+            color: #555; font-size: 0.8rem;
         }
 
         /* --- WATERMARK --- */
         .watermark {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            text-align: right;
-            font-size: 0.7rem;
-            color: var(--neon-green);
-            opacity: 0.6;
-            z-index: 1000;
-            border-right: 2px solid var(--neon-green);
-            padding-right: 10px;
-            line-height: 1.4;
+            position: fixed; bottom: 10px; right: 10px;
+            text-align: right; font-size: 0.7rem; color: var(--neon-green); opacity: 0.5;
+            z-index: 1000; border-right: 2px solid var(--neon-green); padding-right: 10px;
         }
 
-        /* --- MOBILE RESPONSIVENESS --- */
-        @media (max-width: 768px) {
+        @keyframes glitch {
+            0% { clip: rect(44px, 9999px, 56px, 0); }
+            20% { clip: rect(10px, 9999px, 80px, 0); }
+            100% { clip: rect(30px, 9999px, 10px, 0); }
+        }
+
+        /* Mobile Fixes */
+        @media (max-width: 700px) {
             .hero { grid-template-columns: 1fr; text-align: center; }
-            .hero-data h1 { font-size: 2.5rem; }
-            .cover-img { max-width: 200px; margin: 0 auto; }
-        }
-
-        /* --- ANIMATION KEYFRAMES --- */
-        @keyframes glitch-anim {
-            0% { clip: rect(10px, 9999px, 80px, 0); }
-            20% { clip: rect(60px, 9999px, 10px, 0); }
-            40% { clip: rect(90px, 9999px, 30px, 0); }
-            60% { clip: rect(15px, 9999px, 50px, 0); }
-            80% { clip: rect(85px, 9999px, 15px, 0); }
-            100% { clip: rect(120px, 9999px, 5px, 0); }
-        }
-        @keyframes glitch-anim-2 {
-            0% { clip: rect(60px, 9999px, 10px, 0); }
-            20% { clip: rect(120px, 9999px, 5px, 0); }
-            40% { clip: rect(10px, 9999px, 80px, 0); }
-            60% { clip: rect(90px, 9999px, 30px, 0); }
-            80% { clip: rect(15px, 9999px, 50px, 0); }
-            100% { clip: rect(85px, 9999px, 15px, 0); }
-        }
-        @keyframes flicker {
-            0% { opacity: 0.95; }
-            5% { opacity: 0.8; }
-            10% { opacity: 0.9; }
-            15% { opacity: 0.6; }
-            100% { opacity: 0.95; }
         }
     </style>
 </head>
 <body>
 
-    <!-- CRT Overlay Element -->
     <div class="crt-overlay"></div>
 
     <div class="main-interface">
-        
-        <!-- HERO SECTION -->
-        <section class="hero">
-            <div class="cover-wrapper">
-                <!-- LINKED IMAGE FROM FANDOM WIKI -->
-                <img src="https://static.wikia.nocookie.net/tensei-shitara-slime-datta-ken/images/c/ce/Manga_Volume_1_EN.jpg/revision/latest?cb=20181003060111" alt="Volume 1 Cover" class="cover-img">
-            </div>
-            <div class="hero-data">
-                <p class="subtitle">SYSTEM ALERT: NEW ISEKAI DETECTED</p>
-                <!-- The data-text attribute is required for the glitch effect -->
-                <h1 class="glitch-text" data-text="TEMPEST DATABASE">TEMPEST DATABASE</h1>
-                <p style="margin-bottom: 30px; color: #888;">> ENTITY: RIMURU TEMPEST<br>> STATUS: ACTIVE<br>> VOLUME: 01 UNLOCKED</p>
-                
-                <!-- THE PDF LINK -->
-                <a href="book.pdf" target="_blank" class="btn-initialize">
-                    [ INITIALIZE READING ]
-                </a>
-            </div>
-        </section>
 
-        <!-- LOCKED VOLUMES GRID -->
-        <h2 class="database-header">/// ENCRYPTED ARCHIVES (VOL 02-22)</h2>
-        <div class="grid-container" id="grid-target">
-            <!-- Javascript will fill this grid automatically -->
+        <!-- ==================== VIEW 1: HOME PAGE ==================== -->
+        <div id="view-home" class="fade-in">
+            <section class="hero">
+                <div class="cover-wrapper">
+                    <img src="https://static.wikia.nocookie.net/tensei-shitara-slime-datta-ken/images/c/ce/Manga_Volume_1_EN.jpg/revision/latest?cb=20181003060111" alt="Volume 1" class="cover-img">
+                </div>
+                <div class="hero-data">
+                    <p style="color:var(--neon-green); letter-spacing:2px;">SYSTEM: REINCARNATION PROTOCOL</p>
+                    <h1 class="glitch-text" data-text="TEMPEST DATABASE">TEMPEST DATABASE</h1>
+                    <p style="color: #888; margin-bottom: 20px;">
+                        > SUBJECT: RIMURU TEMPEST<br>
+                        > VOLUMES DETECTED: 1-22<br>
+                        > ACCESS LEVEL: PUBLIC
+                    </p>
+                    <button class="btn-main" onclick="openChapterList()">[ ACCESS ARCHIVES ]</button>
+                </div>
+            </section>
+
+            <!-- Locked Volumes Decoration -->
+            <p style="border-bottom: 1px solid #333; padding-bottom:5px;">/// ENCRYPTED DATA STREAMS (VOL 02-22)</p>
+            <div class="grid-container" id="locked-grid"></div>
+        </div>
+
+
+        <!-- ==================== VIEW 2: CHAPTER LIST ==================== -->
+        <div id="view-list" class="hidden fade-in">
+            <div class="chapter-list-container">
+                <div class="list-header">
+                    <h2 style="font-family:'Orbitron'; color:white;">VOLUME 01 // DATA LOGS</h2>
+                    <span class="back-btn" onclick="goHome()">[ < RETURN TO ROOT ]</span>
+                </div>
+
+                <!-- Active Prologue -->
+                <div class="chapter-item" onclick="readPrologue()">
+                    <div>
+                        <span style="color:var(--neon-green); margin-right:10px;">►</span>
+                        <span style="font-weight:bold; color:white;">PROLOGUE</span>
+                    </div>
+                    <span style="font-size:0.8rem; color:#888;">STATUS: UNLOCKED</span>
+                </div>
+
+                <!-- Locked Chapters Mockup -->
+                <div class="chapter-item locked">
+                    <div><span style="margin-right:10px;">🔒</span> CHAPTER 01: The Storm Dragon</div>
+                    <span style="font-size:0.8rem;">ENCRYPTED</span>
+                </div>
+                <div class="chapter-item locked">
+                    <div><span style="margin-right:10px;">🔒</span> CHAPTER 02: Goblin Village</div>
+                    <span style="font-size:0.8rem;">ENCRYPTED</span>
+                </div>
+                <div class="chapter-item locked">
+                    <div><span style="margin-right:10px;">🔒</span> CHAPTER 03: Battle at the Village</div>
+                    <span style="font-size:0.8rem;">ENCRYPTED</span>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ==================== VIEW 3: READER (PROLOGUE) ==================== -->
+        <div id="view-reader" class="hidden fade-in">
+            <div class="reader-ui">
+                <div class="reader-controls">
+                    <span class="back-btn" onclick="openChapterList()">[ < BACK TO LIST ]</span>
+                    <span style="font-family:'Orbitron'; color:var(--neon-blue);">REMAINING: 03 CHAPTERS</span>
+                </div>
+
+                <div style="text-align:center; margin-bottom:40px;">
+                    <h2 style="font-family:'Orbitron'; color:white; font-size:2rem;">PROLOGUE</h2>
+                    <p style="color:var(--neon-pink);">DEATH AND REINCARNATION</p>
+                </div>
+
+                <div class="story-text">
+                    <p>It was just your typical kind of life. I graduated from college, landed a job at a sort-of-big general contractor outfit, and with my older brother taking care of our parents for me, I was currently enjoying all the myriad benefits of the bachelor-pad life. Age thirty-seven. No significant other.</p>
+                    
+                    <p>I wasn’t exactly short or frumpy or hideous or anything. But when it came to the opposite sex, apparently I had nothing to offer. I’d made efforts along those lines, with varying degrees of dedication, but by the third rejection, something fizzled out within me. Besides—really, at this age, I was kinda past the point where a girlfriend needed to be my main focus. Work kept me busy enough. Plus, it wasn’t like I was gonna die without one.</p>
+                    
+                    <p>…I’m not making excuses, all right? It’s just that I started thinking…</p>
+                    
+                    <p>"Oh, hello, sir! Sorry we’re late!"</p>
+                    
+                    <p>There he was, walking toward me, bursting with all that youthful energy of his. He and the beautiful woman next to him. His name was Tamura, one of the guys who worked under me, and she was Sawatari, the front-desk lady and pretty much the "it" girl around the office.</p>
+
+                    <p>"Aaaahhh!!" Screams. Chaos. What is—What’s going on?! "Move! I’ll kill you!!"</p>
+
+                    <p>I turned around to find a man sprinting toward me, a backpack in one hand and a kitchen knife in the other. I could hear shrieking. He was coming my way. With a knife. A knife? And at the other end of it…</p>
+                    
+                    <p>"Tamuraaaa!"</p>
+
+                    <p>The moment I shoved Tamura aside, I felt a burning pain run across my back. My body balled up as it collapsed to the ground, trying to withstand the shock. I couldn’t tell what had happened. I wanted to move, but I couldn’t.</p>
+
+                    <p><em>What’s up with that? It’s too hot… Gimme a break.</em></p>
+
+                    <!-- SYSTEM VOICE STYLING -->
+                    <span class="system-voice">
+                        Confirmed. Resist Heat…successfully acquired.
+                    </span>
+
+                    <p>Did I… Did I just get stabbed? So I’m gonna die from a stabbing? Holy crap…</p>
+
+                    <span class="system-voice">
+                        Confirmed. Resist Piercing Weapon…successfully acquired. Following up with Resist Melee Attack… Successfully acquired.
+                    </span>
+
+                    <p>"M-Mr. Mikami, you’re bleeding… You won’t stop bleeding!"</p>
+
+                    <p>I really didn’t need to hear that right now. Was that Tamura? I thought I heard some kind of weird voice. If it was Tamura, then so be it. I’m bleeding? Well, duh. I’m only human. If you stab me, I’ll probably bleed all over you, yes.</p>
+
+                    <span class="system-voice">
+                        Confirmed. Cancel Pain…successfully acquired.
+                    </span>
+
+                    <p>Um… Well, shit. All this pain and panic was starting to screw around with my consciousness.</p>
+
+                    <p>Now the burning feeling on my back was starting to fizzle out. Instead, an intense, frigid cold was attacking me from head to toe. That… That’s probably bad… People die once they bleed too much, don’t they?</p>
+
+                    <span class="system-voice">
+                        Confirmed. Constructing a blood-free body… Successful.
+                    </span>
+
+                    <p>Hey, what’re you talking about? I can’t hear you too well… Who knew dying could keep you so damn busy?</p>
+
+                    <span class="system-voice">
+                        Confirmed. Resist Cold…successfully acquired. Combined with the previously acquired Resist Heat, the skill has progressed to Resist Temperature.
+                    </span>
+
+                    <p>Just then, what remained of my increasingly oxygen-deprived brain cells chanced upon a flash of brilliance. Oh, craaaaap, the files on my hard drive!</p>
+
+                    <p>"Tamuraaa! If… If anything bad happens to me…take my computer, okay? Put it in the bathtub, turn it on, and just fry everything on the disk for me, man…"</p>
+
+                    <span class="system-voice">
+                        Confirmed. Electricity-based deletion of data… Cannot execute. More information required. Substituting with Resist Electricity… Successfully acquired.
+                    </span>
+
+                    <p>"Ha-ha! That’s just like you, isn’t it?" Even if it was just a snicker, it beat having to depart this plane of existence with a grown man blubbering on top of me.</p>
+
+                    <p>And I was a virgin. Imagine that. Floating off to meet my maker in completely unused condition… My manhood was probably crying its single eye out right then. Sorry I couldn’t make you a real grown-up. If there’s such a thing as reincarnation, I’m gonna go on the attack next time—I promise. I’ll hit up everyone I see, stalking my prey before I go in for the kill…</p>
+
+                    <span class="system-voice">
+                        Confirmed. Unique skill “Predator”…successfully acquired.
+                    </span>
+
+                    <p>I mean, here I was, lookin’ at forty without ever losing my virginity. Like an old sage meditating in the mountains. Another few years, and I probably could’ve been the great sage of celibacy.</p>
+
+                    <span class="system-voice">
+                        Confirmed. Extra skill “Sage”…successfully acquired. Evolving extra skill “Sage” into unique skill “Great Sage”… Successful.
+                    </span>
+
+                    <p>…Hey, someone mind telling me who’s talking? What do you mean, “unique skill ‘Great Sage’”? Someone tryin’ to start something with me? There’s nothing “unique” about that!</p>
+
+                    <p>Before I could continue down that train of thought, however, I fell asleep. Weird how death’s nowhere near as lonely as I thought it’d be. That was the last thought I had on the mortal plane.</p>
+                    
+                    <div style="text-align:center; margin-top:50px; border-top:1px solid #333; padding-top:20px;">
+                        <button class="btn-main" onclick="openChapterList()">[ END OF PROLOGUE ]</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
     </div>
@@ -312,22 +350,41 @@
         SYS_ID: 9942-X
     </div>
 
+    <!-- SYSTEM LOGIC (JAVASCRIPT) -->
     <script>
-        // SIMPLE SCRIPT TO GENERATE THE LOCKED CARDS (VOL 2 - 22)
-        const grid = document.getElementById('grid-target');
-        
+        // DOM Elements
+        const viewHome = document.getElementById('view-home');
+        const viewList = document.getElementById('view-list');
+        const viewReader = document.getElementById('view-reader');
+        const lockedGrid = document.getElementById('locked-grid');
+
+        // Navigation Functions
+        function goHome() {
+            viewHome.classList.remove('hidden');
+            viewList.classList.add('hidden');
+            viewReader.classList.add('hidden');
+            window.scrollTo(0,0);
+        }
+
+        function openChapterList() {
+            viewHome.classList.add('hidden');
+            viewList.classList.remove('hidden');
+            viewReader.classList.add('hidden');
+            window.scrollTo(0,0);
+        }
+
+        function readPrologue() {
+            viewList.classList.add('hidden');
+            viewReader.classList.remove('hidden');
+            window.scrollTo(0,0);
+        }
+
+        // Auto-generate the locked grid items (Visual only)
         for (let i = 2; i <= 22; i++) {
-            const card = document.createElement('div');
-            card.classList.add('data-card', 'locked');
-            
-            // Adding a little randomization to the "glitch" decoration
-            const decoration = Math.random() > 0.5 ? '///' : '>>>';
-            
-            card.innerHTML = `
-                <div class="vol-num">${i < 10 ? '0' + i : i}</div>
-                <div style="font-size: 0.8rem; margin-top:10px;">${decoration} DATA CORRUPT</div>
-            `;
-            grid.appendChild(card);
+            const div = document.createElement('div');
+            div.className = 'mini-card';
+            div.innerHTML = `VOL ${i < 10 ? '0'+i : i} <span style="color:var(--neon-pink); margin-left:5px;">[X]</span>`;
+            lockedGrid.appendChild(div);
         }
     </script>
 </body>
